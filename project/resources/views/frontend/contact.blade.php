@@ -25,7 +25,7 @@
    <div class="container">
       <div class="row">
          <div class="col-lg-7 col-md-7">
-            <h3 class="down-line mb-5" style="border:2px solid red;" >{{ __('Send Message') }}</h3>
+            <h3 class="down-line mb-5" style="border:2px solid black;" >{{ __('Send Message') }}</h3>
             <div class="form-simple mb-5">
                <form class="contactform"  id="contact-form" action="#" method="POST">
                   @csrf
