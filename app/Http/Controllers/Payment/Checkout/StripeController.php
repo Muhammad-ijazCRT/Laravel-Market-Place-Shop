@@ -8,14 +8,14 @@ use App\{
     Models\PaymentGateway,
     Classes\GeniusMailer
 };
-use App\Models\Country;
-use App\Models\State;
-use Illuminate\Http\Request;
-use Cartalyst\Stripe\Laravel\Facades\Stripe;
-use Illuminate\Support\Facades\Auth;
 use Session;
 use OrderHelper;
+use App\Models\State;
+use App\Models\Country;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Cartalyst\Stripe\Laravel\Facades\Stripe;
 
 class StripeController extends CheckoutBaseControlller
 {
@@ -32,9 +32,10 @@ class StripeController extends CheckoutBaseControlller
     {
         $input = $request->all();
 
+        
         $data = PaymentGateway::whereKeyword('stripe')->first();
         $total = $request->total;
-
+        
         if($request->pass_check) {
             $auth = OrderHelper::auth_check($input); // For Authentication Checking
             if(!$auth['auth_success']){
@@ -45,6 +46,7 @@ class StripeController extends CheckoutBaseControlller
         if (!Session::has('cart')) {
             return redirect()->route('front.cart')->with('success',__("You don't have any product to checkout."));
         }
+
 
         $item_name = $this->gs->title." Order";
         $item_number = Str::random(4).time();
@@ -63,6 +65,7 @@ class StripeController extends CheckoutBaseControlller
 
         if ($validator->passes()) {
             $stripe = Stripe::make(\Config::get('services.stripe.secret'));
+            dd($input['cardNumber'])
             try{
                 $token = $stripe->tokens()->create([
                     'card' =>[
@@ -72,6 +75,7 @@ class StripeController extends CheckoutBaseControlller
                             'cvc' => $input['cardCVC'],
                         ],
                     ]);
+                    dd($token);
                 if (!isset($token['id'])) {
                     return back()->with('error',__('Token Problem With Your Token.'));
                 }
@@ -190,6 +194,7 @@ class StripeController extends CheckoutBaseControlller
                     return redirect($success_url);
 
                 }
+                dd('before catch');
 
             }catch (Exception $e){
                 return back()->with('unsuccess', $e->getMessage());
@@ -199,6 +204,7 @@ class StripeController extends CheckoutBaseControlller
                 return back()->with('unsuccess', $e->getMessage());
             }
         }
+        dd('before areturn');
             return back()->with('unsuccess', __('Please Enter Valid Credit Card Informations.'));
 
     }
