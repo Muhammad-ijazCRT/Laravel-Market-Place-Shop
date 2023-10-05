@@ -12,10 +12,10 @@ use App\{
     Models\Notification,
     Models\UserNotification
 };
-use App\Models\AffliateBonus;
 use Auth;
 use Session;
 use Illuminate\Support\Str;
+use App\Models\AffliateBonus;
 
 class OrderHelper
 {
@@ -59,6 +59,7 @@ class OrderHelper
             {
                 if(!empty($prod['item']['license']) && !empty($prod['item']['license_qty']))
                 {
+                    dd('card');
                         foreach($prod['item']['license_qty']as $ttl => $dtl)
                         {
                             if($dtl != 0)

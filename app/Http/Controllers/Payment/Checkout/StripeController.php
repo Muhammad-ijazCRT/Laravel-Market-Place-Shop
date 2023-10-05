@@ -62,10 +62,10 @@ class StripeController extends CheckoutBaseControlller
             'year' => 'required',
         ]);
 
+        // dd(\Config::get('services.stripe.secret'));
 
         if ($validator->passes()) {
             $stripe = Stripe::make(\Config::get('services.stripe.secret'));
-            dd($input['cardNumber'])
             try{
                 $token = $stripe->tokens()->create([
                     'card' =>[
@@ -75,7 +75,6 @@ class StripeController extends CheckoutBaseControlller
                             'cvc' => $input['cardCVC'],
                         ],
                     ]);
-                    dd($token);
                 if (!isset($token['id'])) {
                     return back()->with('error',__('Token Problem With Your Token.'));
                 }
@@ -194,7 +193,6 @@ class StripeController extends CheckoutBaseControlller
                     return redirect($success_url);
 
                 }
-                dd('before catch');
 
             }catch (Exception $e){
                 return back()->with('unsuccess', $e->getMessage());
@@ -204,7 +202,6 @@ class StripeController extends CheckoutBaseControlller
                 return back()->with('unsuccess', $e->getMessage());
             }
         }
-        dd('before areturn');
             return back()->with('unsuccess', __('Please Enter Valid Credit Card Informations.'));
 
     }
