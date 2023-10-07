@@ -58,7 +58,7 @@ class OrderHelper
 
         foreach($cart->items as $key => $prod)
         {
-                dd($prod['item']);
+                
                 if(!empty($prod['item']['license']) && !empty($prod['item']['license_qty']))
                 {
                         foreach($prod['item']['license_qty']as $ttl => $dtl)
