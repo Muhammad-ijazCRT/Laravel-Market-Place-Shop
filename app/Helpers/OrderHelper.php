@@ -257,6 +257,7 @@ class OrderHelper
 
     public static function add_to_transaction($data,$price){
         try{
+            
             $transaction = new Transaction;
             $transaction->txn_number = Str::random(3).substr(time(), 6,8).Str::random(3);
             $transaction->user_id = $data->user_id;

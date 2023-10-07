@@ -41,7 +41,6 @@ $cardData = Session::get('cart');
         $oldCart = Session::get('cart');
         $cart = new Cart($oldCart);
         $data = OrderHelper::license_check($cart); // For License Checking
-        dd($cart);
         $t_oldCart = Session::get('cart');
         $t_cart = new Cart($t_oldCart);
         $new_cart = [];
@@ -51,7 +50,8 @@ $cardData = Session::get('cart');
         $new_cart = json_encode($new_cart);
         $temp_affilate_users = OrderHelper::product_affilate_check($cart); // For Product Based Affilate Checking
         $affilate_users = $temp_affilate_users == null ? null : json_encode($temp_affilate_users);
-
+        
+        // dd($temp_affilate_users);
         $order = new Order;
         $success_url = route('front.payment.return');
         $input['user_id'] = Auth::check() ? Auth::user()->id : NULL;
@@ -66,6 +66,7 @@ $cardData = Session::get('cart');
             $input['tax_location'] = Country::findOrFail($input['tax'])->country_name;
         }
         $input['tax'] = Session::get('current_tax');
+        // dd($input['user_id']);
 
         if (Session::has('affilate')) {
             $val = $request->total / $this->curr->value;
@@ -85,7 +86,7 @@ $cardData = Session::get('cart');
             }
 
         }
-
+        // order save and complete
         $order->fill($input)->save();
         $order->tracks()->create(['title' => 'Pending', 'text' => 'You have successfully placed your order.' ]);
         $order->notifications()->create();
@@ -101,16 +102,17 @@ $cardData = Session::get('cart');
                 foreach ($rewards as $i) {
                     $smallest[$i->order_amount] = abs($i->order_amount - $num);
                 }
-
+                
                 asort($smallest);
                 $final_reword = Reward::where('order_amount',key($smallest))->first();
                 Auth::user()->update(['reward' => (Auth::user()->reward + $final_reword->reward)]);
             }
         }
-
+        
         OrderHelper::size_qty_check($cart); // For Size Quantiy Checking
-        OrderHelper::stock_check($cart); // For Stock Checking
+        $data = OrderHelper::stock_check($cart); // For Stock Checking
         OrderHelper::vendor_order_check($cart,$order); // For Vendor Order Checking
+        
 
         Session::put('temporder',$order);
         Session::put('tempcart',$cart);
@@ -120,9 +122,12 @@ $cardData = Session::get('cart');
         Session::forget('coupon_total');
         Session::forget('coupon_total1');
         Session::forget('coupon_percentage');
+        
+        
 
+        // $order->wallet_price = 100; for kycard only
         if ($order->user_id != 0 && $order->wallet_price != 0) {
-            OrderHelper::add_to_transaction($order,$order->wallet_price); // Store To Transactions
+            $data = OrderHelper::add_to_transaction($order,$order->wallet_price); // Store To Transactions
         }
 
         //Sending Email To Buyer
@@ -137,19 +142,19 @@ $cardData = Session::get('cart');
             'onumber' => $order->order_number,
         ];
 
-        $mailer = new GeniusMailer();
-        $mailer->sendAutoOrderMail($data,$order->id);
+        // $mailer = new GeniusMailer();
+        // $mailer->sendAutoOrderMail($data,$order->id);
 
         //Sending Email To Admin
-        $data = [
-            'to' => $this->ps->contact_email,
-            'subject' => "New Order Recieved!!",
-            'body' => "Hello Admin!<br>Your store has received a new order.<br>Order Number is ".$order->order_number.".Please login to your panel to check. <br>Thank you.",
-        ];
-        $mailer = new GeniusMailer();
-        $mailer->sendCustomMail($data);
+        // $data = [
+        //     'to' => $this->ps->contact_email,
+        //     'subject' => "New Order Recieved!!",
+        //     'body' => "Hello Admin!<br>Your store has received a new order.<br>Order Number is ".$order->order_number.".Please login to your panel to check. <br>Thank you.",
+        // ];
+        // $mailer = new GeniusMailer();
+        // $mailer->sendCustomMail($data);
 
-        dd('adfasdfas');
+        // dd('adfasdfas');
 
         return redirect($success_url);
     }
