@@ -54,12 +54,12 @@ class OrderHelper
     }
 
     public static function license_check($cart){
+        dd('hel-per function');
 
             foreach($cart->items as $key => $prod)
             {
                 if(!empty($prod['item']['license']) && !empty($prod['item']['license_qty']))
                 {
-                    dd('card');
                         foreach($prod['item']['license_qty']as $ttl => $dtl)
                         {
                             if($dtl != 0)

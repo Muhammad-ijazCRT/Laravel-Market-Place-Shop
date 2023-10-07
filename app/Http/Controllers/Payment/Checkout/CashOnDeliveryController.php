@@ -7,14 +7,14 @@ use App\{
     Models\Order,
     Classes\GeniusMailer
 };
-use App\Models\Country;
-use App\Models\Reward;
-use App\Models\State;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Session;
 use OrderHelper;
+use App\Models\State;
+use App\Models\Reward;
+use App\Models\Country;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CashOnDeliveryController extends CheckoutBaseControlller
 {
@@ -28,13 +28,20 @@ class CashOnDeliveryController extends CheckoutBaseControlller
             }
         }
 
+// dd(Session::has('cart'));
+// $cardData = Session::get('cart');
+// return $cardData;
+// dd($cardData);
+
+$cardData = Session::get('cart');
         if (!Session::has('cart')) {
             return redirect()->route('front.cart')->with('success',__("You don't have any product to checkout."));
         }
 
         $oldCart = Session::get('cart');
         $cart = new Cart($oldCart);
-        OrderHelper::license_check($cart); // For License Checking
+        $data = OrderHelper::license_check($cart); // For License Checking
+        dd($cart);
         $t_oldCart = Session::get('cart');
         $t_cart = new Cart($t_oldCart);
         $new_cart = [];
@@ -141,6 +148,8 @@ class CashOnDeliveryController extends CheckoutBaseControlller
         ];
         $mailer = new GeniusMailer();
         $mailer->sendCustomMail($data);
+
+        dd('adfasdfas');
 
         return redirect($success_url);
     }

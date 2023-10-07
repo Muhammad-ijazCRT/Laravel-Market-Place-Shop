@@ -32,12 +32,14 @@ class StripeController extends CheckoutBaseControlller
     {
         $input = $request->all();
 
+        return $input;
         
         $data = PaymentGateway::whereKeyword('stripe')->first();
         $total = $request->total;
         
-        if($request->pass_check) {
-            $auth = OrderHelper::auth_check($input); // For Authentication Checking
+        if($request->pass_check) 
+        {
+            $auth = OrderHelper::pass_check($input); // For Authentication Checking
             if(!$auth['auth_success']){
                 return redirect()->back()->with('unsuccess',$auth['error_message']);
             }
@@ -54,7 +56,6 @@ class StripeController extends CheckoutBaseControlller
         $success_url = route('front.payment.return');
 
         // Validate Card Data
-
         $validator = \Validator::make($request->all(),[
             'cardNumber' => 'required',
             'cardCVC' => 'required',
@@ -63,7 +64,7 @@ class StripeController extends CheckoutBaseControlller
         ]);
 
         // dd(\Config::get('services.stripe.secret'));
-
+        
         if ($validator->passes()) {
             $stripe = Stripe::make(\Config::get('services.stripe.secret'));
             try{
