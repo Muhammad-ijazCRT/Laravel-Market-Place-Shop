@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 class ManualPaymentController extends SubscriptionBaseController
 {
     public function store(Request $request){
+        
         $this->validate($request, [
             'shop_name'   => 'unique:users',
            ],[ 
@@ -27,6 +28,8 @@ class ManualPaymentController extends SubscriptionBaseController
         $today = Carbon::now()->format('Y-m-d');
         $input = $request->all();  
         $user->update($input);
+
+        dd($user);
 
         $sub = new UserSubscription;
         $sub->user_id = $user->id;

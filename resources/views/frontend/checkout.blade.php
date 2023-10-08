@@ -346,6 +346,8 @@
                                           @foreach($gateways as $gt)
                                              @if ($gt->checkout == 1)
                                              @if($gt->type == 'manual')
+                                             {{-- ======================================= mehnual payenmt ======================================= --}}
+                                             {{ route('front.load.payment',['slug1' => $gt->showKeyword(),'slug2' => $gt->id]) }}
                                              @if($digital == 0)
                                              <a class="nav-link payment" data-val="" data-show="{{$gt->showForm()}}"
                                                 data-form="{{ $gt->showCheckoutLink() }}"
@@ -367,6 +369,7 @@
                                                 </p>
                                              </a>
                                              @endif
+                                             {{-- ======================================= mehnual payenmt end ======================================= --}}
                                              @else
                                              <a class="nav-link payment" data-val="{{ $gt->keyword }}" data-show="{{$gt->showForm()}}"
                                                 data-form="{{ $gt->showCheckoutLink() }}"
@@ -390,12 +393,18 @@
                                              @endif
                                              @endif
                                           @endforeach
+
+
+
+                                          <button id="myButton" class="btn btn-primary" role="button" onclick="showAlert()">Button</button>
+
                                        </div>
                                     </div>
                                     <div class="col-lg-12">
                                        <div class="pay-area d-none">
                                           <div class="tab-content" id="v-pills-tabContent">
                                              @foreach($gateways as $gt)
+                                             {{-- ================ menual payment ===================== --}}
                                              @if($gt->type == 'manual')
                                              @if($digital == 0)
                                              <div class="tab-pane fade" id="v-pills-tab{{ $gt->id }}"
@@ -410,6 +419,9 @@
                                              </div>
                                              @endif
                                              @endforeach
+
+                                          
+
                                           </div>
                                        </div>
                                     </div>
@@ -430,6 +442,21 @@
                      </div>
                   </div>
                </div>
+
+
+{{-- script --}}
+<script>
+    function showAlert() {
+        alert('Button clicked!');
+    }
+</script>
+
+
+
+
+
+
+
                <input type="hidden" id="shipping-cost" name="shipping_cost" value="0">
                <input type="hidden" id="packing-cost" name="packing_cost" value="0">
                <input type="hidden" id="shipping-title" name="shipping_title" value="0">
