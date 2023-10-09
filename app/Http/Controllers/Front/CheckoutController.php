@@ -2,17 +2,15 @@
 
 namespace App\Http\Controllers\Front;
 
-use App\{
-    Models\Cart,
-    Models\Order,
-    Models\PaymentGateway
-};
-use App\Models\Product;
-use App\Models\State;
 use DB;
 use Auth;
-use Illuminate\Support\Facades\Request;
 use Session;
+use App\Models\Cart;
+use App\Models\Order;
+use App\Models\State;
+use App\Models\Product;
+use App\Models\PaymentGateway;
+use Illuminate\Support\Facades\Request;
 
 
 class CheckoutController extends FrontBaseController
@@ -66,7 +64,7 @@ class CheckoutController extends FrontBaseController
         $curr = $this->curr;
         $gateways =  PaymentGateway::scopeHasGateway($this->curr->id);
 
-
+        // return $this->curr;
         $pickups =  DB::table('pickups')->get();
         $oldCart = Session::get('cart');
         $cart = new Cart($oldCart);
@@ -205,7 +203,6 @@ class CheckoutController extends FrontBaseController
             }
         }
     }
-
 
     public function getState($country_id)
     {

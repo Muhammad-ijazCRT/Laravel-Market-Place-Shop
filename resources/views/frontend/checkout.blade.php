@@ -346,8 +346,6 @@
                                           @foreach($gateways as $gt)
                                              @if ($gt->checkout == 1)
                                              @if($gt->type == 'manual')
-                                             {{-- ======================================= mehnual payenmt ======================================= --}}
-                                             {{ route('front.load.payment',['slug1' => $gt->showKeyword(),'slug2' => $gt->id]) }}
                                              @if($digital == 0)
                                              <a class="nav-link payment" data-val="" data-show="{{$gt->showForm()}}"
                                                 data-form="{{ $gt->showCheckoutLink() }}"
@@ -369,7 +367,6 @@
                                                 </p>
                                              </a>
                                              @endif
-                                             {{-- ======================================= mehnual payenmt end ======================================= --}}
                                              @else
                                              <a class="nav-link payment" data-val="{{ $gt->keyword }}" data-show="{{$gt->showForm()}}"
                                                 data-form="{{ $gt->showCheckoutLink() }}"
@@ -396,7 +393,11 @@
 
 
 
-                                          <button id="myButton" class="btn btn-primary" role="button" onclick="showAlert()">Button</button>
+<!-- Button trigger modal -->
+{{-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+  Launch demo modal
+</button> --}}
+
 
                                        </div>
                                     </div>
@@ -404,7 +405,6 @@
                                        <div class="pay-area d-none">
                                           <div class="tab-content" id="v-pills-tabContent">
                                              @foreach($gateways as $gt)
-                                             {{-- ================ menual payment ===================== --}}
                                              @if($gt->type == 'manual')
                                              @if($digital == 0)
                                              <div class="tab-pane fade" id="v-pills-tab{{ $gt->id }}"
@@ -419,9 +419,6 @@
                                              </div>
                                              @endif
                                              @endforeach
-
-                                          
-
                                           </div>
                                        </div>
                                     </div>
@@ -442,21 +439,6 @@
                      </div>
                   </div>
                </div>
-
-
-{{-- script --}}
-<script>
-    function showAlert() {
-        alert('Button clicked!');
-    }
-</script>
-
-
-
-
-
-
-
                <input type="hidden" id="shipping-cost" name="shipping_cost" value="0">
                <input type="hidden" id="packing-cost" name="packing_cost" value="0">
                <input type="hidden" id="shipping-title" name="shipping_title" value="0">
@@ -491,6 +473,105 @@
                <input type="hidden" name="user_id" id="user_id" value="{{ Auth::guard('web')->check() ? Auth::guard('web')->user()->id : '' }}">
             </form>
          </div>
+
+
+
+
+
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {{-- ... --}}
+        <form action="/kycard-checkout" method="post">
+        @csrf
+         <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">Email address</label>
+            <input type="email" name="email  " class=" form"  id="exampleInputEmail1" aria-describedby="emailHelp">
+         </div>
+         <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label">Password</label>
+            <input type="text" class="form" name="password" id="exampleInputPassword1">
+         </div>
+
+
+
+{{-- ============================ extra fields ================================================ --}}
+  <input type="hidden" id="shipping-cost" name="shipping_cost" value="0">
+               <input type="hidden" id="packing-cost" name="packing_cost" value="0">
+               <input type="hidden" id="shipping-title" name="shipping_title" value="0">
+               <input type="hidden" id="packing-title" name="packing_title" value="0">
+               <input type="hidden" name="dp" value="{{$digital}}">
+               <input type="hidden" id="input_tax" name="tax" value="">
+               <input type="hidden" id="input_tax_type" name="tax_type" value="">
+               <input type="hidden" name="totalQty" value="{{$totalQty}}">
+               <input type="hidden" name="vendor_shipping_id" value="{{ $vendor_shipping_id }}">
+               <input type="hidden" name="vendor_packing_id" value="{{ $vendor_packing_id }}">
+               <input type="hidden" name="currency_sign" value="{{ $curr->sign }}">
+               <input type="hidden" name="currency_name" value="{{ $curr->name }}">
+               <input type="hidden" name="currency_value" value="{{ $curr->value }}">
+               @php
+               @endphp
+               @if(Session::has('coupon_total'))
+               <input type="hidden" name="total" id="grandtotal" value="{{round($totalPrice * $curr->value,2)}}">
+               <input type="hidden" id="tgrandtotal" value="{{ $totalPrice }}">
+               @elseif(Session::has('coupon_total1'))
+               <input type="hidden" name="total" id="grandtotal" value="{{ preg_replace("/[^0-9,.]/", "", Session::get('coupon_total1') ) }}">
+               <input type="hidden" id="tgrandtotal" value="{{ preg_replace("/[^0-9,.]/", "", Session::get('coupon_total1') ) }}">
+               @else
+               <input type="hidden" name="total" id="grandtotal" value="{{round($totalPrice * $curr->value,2)}}">
+               <input type="hidden" id="tgrandtotal" value="{{round($totalPrice * $curr->value,2)}}">
+               @endif
+               <input type="hidden" id="original_tax" value="0">
+               <input type="hidden" id="wallet-price" name="wallet_price" value="0">
+               <input type="hidden" id="ttotal" value="{{ Session::has('cart') ? App\Models\Product::convertPrice(Session::get('cart')->totalPrice) : '0' }}">
+               <input type="hidden" name="coupon_code" id="coupon_code" value="{{ Session::has('coupon_code') ? Session::get('coupon_code') : '' }}">
+               <input type="hidden" name="coupon_discount" id="coupon_discount" value="{{ Session::has('coupon') ? Session::get('coupon') : '' }}">
+               <input type="hidden" name="coupon_id" id="coupon_id" value="{{ Session::has('coupon') ? Session::get('coupon_id') : '' }}">
+               <input type="hidden" name="user_id" id="user_id" value="{{ Auth::guard('web')->check() ? Auth::guard('web')->user()->id : '' }}">
+{{-- ============================ extra fields ================================================ --}}
+
+         <button type="submit" class="btn btn-primary">Submit</button>
+         </form>
+        {{-- ... --}}
+        
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
          @if(Session::has('cart'))
          <div class="col-lg-4">
             <div class="right-area">

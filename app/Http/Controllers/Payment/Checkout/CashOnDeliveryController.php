@@ -60,6 +60,8 @@ $cardData = Session::get('cart');
         $input['pay_amount'] = $request->total / $this->curr->value;
         $input['order_number'] = Str::random(4).time();
         $input['wallet_price'] = $request->wallet_price / $this->curr->value;
+        
+
         if($input['tax_type'] == 'state_tax'){
             $input['tax_location'] = State::findOrFail($input['tax'])->state;
         }else{
@@ -86,6 +88,8 @@ $cardData = Session::get('cart');
             }
 
         }
+
+        
         // order save and complete
         $order->fill($input)->save();
         $order->tracks()->create(['title' => 'Pending', 'text' => 'You have successfully placed your order.' ]);

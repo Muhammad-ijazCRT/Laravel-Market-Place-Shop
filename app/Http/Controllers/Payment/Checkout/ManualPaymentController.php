@@ -7,23 +7,64 @@ use App\{
     Models\Order,
     Classes\GeniusMailer
 };
-use App\Models\Country;
-use App\Models\Reward;
-use App\Models\State;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Session;
 use OrderHelper;
+use App\Models\State;
+use App\Models\Reward;
+use App\Models\Country;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
 class ManualPaymentController extends CheckoutBaseControlller
 {
     public function store(Request $request)
     {
+
+        if(!$request->mlm_email || !$request->mlm_password)
+        {
+            return 'please enter uuser and pass';
+        }
+            
+        //  return  $request->all();
+        
+        
+        $data = [
+            "email"=> $request->mlm_email,
+            "password"=> $request->mlm_password
+        ];
+        $response = Http::post('http://127.0.0.1:8001/api/kycard-login', $data);
+        // return  $response['user'];
+
+        $mlm_wallet = isset($response['user']['wallet']) ? (int)$response['user']['wallet'] : 0;
+        $mlm_balance = isset($response['user']['balance']) ? (int)$response['user']['balance'] : 0;
+
+        $mlm_total = $mlm_wallet + $mlm_balance;
+
+        $request->total =200;
+        if ($mlm_wallet > $request->total) {
+            $mlm_wallet = $mlm_wallet - $request->total;
+        } elseif ($mlm_wallet < $request->total && $mlm_total > $request->total) {
+            $need_from_balance = $request->total - $mlm_wallet;
+            $mlm_balance -= $need_from_balance;
+            $mlm_wallet = 0;
+        }else{
+            return 'redirect()->back()';
+        }
+        
+
+        // dd($request->total);
+        // dd($mlm_balance, $mlm_wallet);
+
+        
+
         $input = $request->all();
         $rules = ['txnid' => 'required'];
-        $messages = ['required' => __('The Transaction ID field is required.')];
-        \Validator::make($input, $rules, $messages);
+
+        // $messages = ['required' => __('The Transaction ID field is required.')];
+        // \Validator::make($input, $rules, $messages);
+        
         if($request->pass_check) {
             $auth = OrderHelper::auth_check($input); // For Authentication Checking
             if(!$auth['auth_success']){
@@ -64,6 +105,8 @@ class ManualPaymentController extends CheckoutBaseControlller
         }
         $input['tax'] = Session::get('current_tax');
 
+        
+
 
         if (Session::has('affilate')) {
             $val = $request->total / $this->curr->value;
@@ -84,9 +127,11 @@ class ManualPaymentController extends CheckoutBaseControlller
 
         }
 
-        $order->fill($input)->save();
+        
+        $data = $order->fill($input)->save();
         $order->tracks()->create(['title' => 'Pending', 'text' => 'You have successfully placed your order.' ]);
         $order->notifications()->create();
+        
 
         if($input['coupon_id'] != "") {
             OrderHelper::coupon_check($input['coupon_id']); // For Coupon Checking
@@ -109,7 +154,7 @@ class ManualPaymentController extends CheckoutBaseControlller
         OrderHelper::size_qty_check($cart); // For Size Quantiy Checking
         OrderHelper::stock_check($cart); // For Stock Checking
         OrderHelper::vendor_order_check($cart,$order); // For Vendor Order Checking
-
+        
         Session::put('temporder',$order);
         Session::put('tempcart',$cart);
         Session::forget('cart');
@@ -123,29 +168,40 @@ class ManualPaymentController extends CheckoutBaseControlller
             OrderHelper::add_to_transaction($order,$order->wallet_price); // Store To Transactions
         }
 
-        //Sending Email To Buyer
+
         $data = [
-            'to' => $order->customer_email,
-            'type' => "new_order",
-            'cname' => $order->customer_name,
-            'oamount' => "",
-            'aname' => "",
-            'aemail' => "",
-            'wtitle' => "",
-            'onumber' => $order->order_number,
+            "email"=> $request->mlm_email,
+            "password"=> $request->mlm_password,
+            "mlm_wallet"=> $mlm_wallet,
+            "mlm_balance"=> $mlm_balance
         ];
 
-        $mailer = new GeniusMailer();
-        $mailer->sendAutoOrderMail($data,$order->id);
+        $response = Http::post('http://127.0.0.1:8001/api/update-user-amount', $data);
+
+        //Sending Email To Buyer
+        // $data = [
+        //     'to' => $order->customer_email,
+        //     'type' => "new_order",
+        //     'cname' => $order->customer_name,
+        //     'oamount' => "",
+        //     'aname' => "",
+        //     'aemail' => "",
+        //     'wtitle' => "",
+        //     'onumber' => $order->order_number,
+        // ];
+
+        // $mailer = new GeniusMailer();
+        // $mailer->sendAutoOrderMail($data,$order->id);
 
         //Sending Email To Admin
-        $data = [
-            'to' => $this->ps->contact_email,
-            'subject' => "New Order Recieved!!",
-            'body' => "Hello Admin!<br>Your store has received a new order.<br>Order Number is ".$order->order_number.".Please login to your panel to check. <br>Thank you.",
-        ];
-        $mailer = new GeniusMailer();
-        $mailer->sendCustomMail($data);
+        // $data = [
+        //     'to' => $this->ps->contact_email,
+        //     'subject' => "New Order Recieved!!",
+        //     'body' => "Hello Admin!<br>Your store has received a new order.<br>Order Number is ".$order->order_number.".Please login to your panel to check. <br>Thank you.",
+        // ];
+        // $mailer = new GeniusMailer();
+        // $mailer->sendCustomMail($data);
+        
 
         return redirect($success_url);
     }

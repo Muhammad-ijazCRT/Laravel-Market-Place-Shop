@@ -474,8 +474,11 @@ function setInstallmentInfo(status, response) {
 
 
     <div class="col-lg-6">
-      <label>{{ __('Transaction ID#') }} *</label>
-      <input class="form-control" name="txnid" type="text" placeholder="{{ __('Transaction ID#') }}"  />
+      <label>{{ __('MLM Login') }} *</label>
+      {{-- <input class="form-control" name="txnid" type="text" placeholder="{{ __('Transaction ID#') }}"  /> --}}
+      <input class="form-control" name="mlm_email" type="email" placeholder="{{ __('MLM Email') }}"  required />
+      <input class="form-control" name="mlm_password" type="text" placeholder="{{ __('Password') }}"  required />
+      
     </div>
 
   </div>

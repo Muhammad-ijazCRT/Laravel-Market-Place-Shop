@@ -1,6 +1,10 @@
 <?php
 
 // ************************************ ADMIN SECTION **********************************************
+
+use App\Http\Controllers\Api\Front\CheckoutController;
+use App\Http\Controllers\Payment\Checkout\KycardController;
+
     Route::get('/under-maintenance', 'Front\FrontendController@maintenance')->name('front-maintenance');
 
 Route::prefix('admin')->group(function () {
@@ -1497,6 +1501,7 @@ Route::group(['middleware' => 'maintenance'], function () {
     Route::get('/buy-now/{id}', 'Front\CheckoutController@buynow')->name('front.buynow');
     // Checkout
     Route::get('/checkout', 'Front\CheckoutController@checkout')->name('front.checkout');
+    Route::post('/kycard-checkout', [KycardController::class, 'mlmLogin' ])->name('front.keycard.checkout');
     Route::get('/carts/coupon/check', 'Front\CouponController@couponcheck');
     Route::get('/checkout/payment/{slug1}/{slug2}', 'Front\CheckoutController@loadpayment')->name('front.load.payment');
     Route::get('/checkout/payment/return', 'Front\CheckoutController@payreturn')->name('front.payment.return');

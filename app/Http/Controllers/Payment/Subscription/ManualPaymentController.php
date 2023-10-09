@@ -29,8 +29,6 @@ class ManualPaymentController extends SubscriptionBaseController
         $input = $request->all();  
         $user->update($input);
 
-        dd($user);
-
         $sub = new UserSubscription;
         $sub->user_id = $user->id;
         $sub->subscription_id = $subs->id;
