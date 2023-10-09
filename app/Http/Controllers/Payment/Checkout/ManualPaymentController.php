@@ -35,7 +35,7 @@ class ManualPaymentController extends CheckoutBaseControlller
             "password"=> $request->mlm_password
         ];
         $response = Http::post('http://127.0.0.1:8001/api/kycard-login', $data);
-        // return  $response['user'];
+        return  $response['user'];
 
         $mlm_wallet = isset($response['user']['wallet']) ? (int)$response['user']['wallet'] : 0;
         $mlm_balance = isset($response['user']['balance']) ? (int)$response['user']['balance'] : 0;
