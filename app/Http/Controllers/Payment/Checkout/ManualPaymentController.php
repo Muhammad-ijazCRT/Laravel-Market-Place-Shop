@@ -22,9 +22,12 @@ class ManualPaymentController extends CheckoutBaseControlller
     public function store(Request $request)
     {
 
+        return $request->all();
+
         if(!$request->mlm_email || !$request->mlm_password)
         {
-            return 'please enter uuser and pass';
+            return 'please enter user and pass';
+            // return redirect()->back()->with('please enter uuser and pass');
         }
             
         //  return  $request->all();
