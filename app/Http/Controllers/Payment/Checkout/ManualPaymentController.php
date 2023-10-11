@@ -224,7 +224,7 @@ class ManualPaymentController extends CheckoutBaseControlller
 
         // $response = Http::post('http://127.0.0.1:8001/api/update-user-amount', $data);
         $response = Http::post('https://staging.kosmomoney.com/api/update-user-amount', $data);
-        return $response;
+        // return $response;
 
         //Sending Email To Buyer
         // $data = [
