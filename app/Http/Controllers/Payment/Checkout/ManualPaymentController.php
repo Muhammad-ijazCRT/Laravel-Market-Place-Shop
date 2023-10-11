@@ -150,7 +150,6 @@ class ManualPaymentController extends CheckoutBaseControlller
 
         }
 
-        return $input;
         $data = $order->fill($input)->save();
         $order->tracks()->create(['title' => 'Pending', 'text' => 'You have successfully placed your order.' ]);
         $order->notifications()->create();
