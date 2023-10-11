@@ -49,6 +49,9 @@ class ManualPaymentController extends CheckoutBaseControlller
             return $response;
         }
 
+
+        
+
         $mlm_wallet = isset($response['user']['wallet']) ? (int)$response['user']['wallet'] : 0;
         $mlm_balance = isset($response['user']['balance']) ? (int)$response['user']['balance'] : 0;
 
