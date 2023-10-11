@@ -45,6 +45,7 @@ class ManualPaymentController extends CheckoutBaseControlller
         if(isset($response['user']))
         {
             // return  $response['user'];
+            
         }else{
             return $response;
         }
@@ -57,7 +58,7 @@ class ManualPaymentController extends CheckoutBaseControlller
 
         $mlm_total = $mlm_wallet + $mlm_balance;
 
-        $request->total =200;
+        // $request->total =200;
         if ($mlm_wallet > $request->total) {
             $mlm_wallet = $mlm_wallet - $request->total;
         } elseif ($mlm_wallet < $request->total && $mlm_total > $request->total) {
@@ -65,7 +66,8 @@ class ManualPaymentController extends CheckoutBaseControlller
             $mlm_balance -= $need_from_balance;
             $mlm_wallet = 0;
         }else{
-            return redirect()->back();
+            return redirect()->back()->with('unsuccess','you have insufficient amount!');
+            // return redirect()->back();
         }
         
 
