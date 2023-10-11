@@ -57,22 +57,22 @@ class ManualPaymentController extends CheckoutBaseControlller
 
         
 
-        // $mlm_wallet = isset($response['user']['wallet']) ? (int)$response['user']['wallet'] : 0;
-        // $mlm_balance = isset($response['user']['balance']) ? (int)$response['user']['balance'] : 0;
+        $mlm_wallet = isset($response['user']['wallet']) ? (int)$response['user']['wallet'] : 0;
+        $mlm_balance = isset($response['user']['balance']) ? (int)$response['user']['balance'] : 0;
 
-        // $mlm_total = $mlm_wallet + $mlm_balance;
+        $mlm_total = $mlm_wallet + $mlm_balance;
 
-        // // $request->total =200;
-        // if ($mlm_wallet > $request->total) {
-        //     $mlm_wallet = $mlm_wallet - $request->total;
-        // } elseif ($mlm_wallet < $request->total && $mlm_total > $request->total) {
-        //     $need_from_balance = $request->total - $mlm_wallet;
-        //     $mlm_balance -= $need_from_balance;
-        //     $mlm_wallet = 0;
-        // }else{
-        //     return redirect()->back()->with('unsuccess','you have insufficient amount!');
-        //     // return redirect()->back();
-        // }
+        // $request->total =200;
+        if ($mlm_wallet > $request->total) {
+            $mlm_wallet = $mlm_wallet - $request->total;
+        } elseif ($mlm_wallet < $request->total && $mlm_total > $request->total) {
+            $need_from_balance = $request->total - $mlm_wallet;
+            $mlm_balance -= $need_from_balance;
+            $mlm_wallet = 0;
+        }else{
+            return redirect()->back()->with('unsuccess','you have insufficient amount!');
+            // return redirect()->back();
+        }
         
 
         // dd($request->total);
