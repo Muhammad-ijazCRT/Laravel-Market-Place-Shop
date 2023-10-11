@@ -28,11 +28,15 @@ class ManualPaymentController extends CheckoutBaseControlller
 {
     public function store(Request $request)
     {
+        // $request->validate([
+        //     'title' => 'required|unique:posts|max:255',
+        //     'body' => 'required',
+        // ]);
 
         if(!$request->mlm_email || !$request->mlm_password)
         {
-            return 'please enter user and pass';
-            // return redirect()->back()->with('please enter uuser and pass');
+            
+            return redirect()->back()->with('unsuccess','Please enter email and password!');
         }
         
         $data = [
@@ -47,7 +51,7 @@ class ManualPaymentController extends CheckoutBaseControlller
             // return  $response['user'];
             
         }else{
-            return $response;
+            return redirect()->back()->with('unsuccess','Please enter valid credentials!');
         }
 
 
@@ -225,7 +229,7 @@ class ManualPaymentController extends CheckoutBaseControlller
         
 
         // $response = Http::post('http://127.0.0.1:8001/api/update-user-amount', $data);
-        $response = Http::post('https://staging.kosmomoney.com/api/update-user-amount', $data);
+        // $response = Http::post('https://staging.kosmomoney.com/api/update-user-amount', $data);
         // return $response;
 
         //Sending Email To Buyer
@@ -253,6 +257,6 @@ class ManualPaymentController extends CheckoutBaseControlller
         // $mailer->sendCustomMail($data);
         
 
-        return redirect($success_url);
+        return redirect($success_url)->with('success',__("Thanks for purchasing the product."));
     }
 }
