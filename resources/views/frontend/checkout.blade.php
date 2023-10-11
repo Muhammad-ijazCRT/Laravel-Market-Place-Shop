@@ -245,6 +245,11 @@
                            <div class="content">
                               <div class="order-area">
                                  @foreach($products as $product)
+                              {{-- {{ dd($product['item']['price']) }} --}}
+                              {{-- {{ dd($product['item']) }} --}}
+                                <input type="hidden" class="form-control" name="seller_id[]" value="{{ $product['item']['user_id'] }}">
+                                <input type="hidden" class="form-control" name="product_price[]" value="{{ $product['item']['price'] }}">
+
                                  <div class="order-item">
                                     <div class="product-img">
                                        <div class="d-flex">

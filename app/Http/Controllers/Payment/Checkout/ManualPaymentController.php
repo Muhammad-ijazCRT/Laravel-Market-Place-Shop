@@ -8,13 +8,20 @@ use App\{
     Classes\GeniusMailer
 };
 use Session;
+use Exception;
 use OrderHelper;
+use Stripe\Token;
+use Stripe\Stripe;
+use App\Models\User;
 use App\Models\State;
 use App\Models\Reward;
 use App\Models\Country;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+
+
 use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Support\Facades\Http;
 
 class ManualPaymentController extends CheckoutBaseControlller
@@ -22,39 +29,40 @@ class ManualPaymentController extends CheckoutBaseControlller
     public function store(Request $request)
     {
 
-        return $request->all();
-
         if(!$request->mlm_email || !$request->mlm_password)
         {
             return 'please enter user and pass';
             // return redirect()->back()->with('please enter uuser and pass');
         }
-            
-        //  return  $request->all();
-        
         
         $data = [
             "email"=> $request->mlm_email,
             "password"=> $request->mlm_password
         ];
         $response = Http::post('http://127.0.0.1:8001/api/kycard-login', $data);
-        return  $response['user'];
+        
+        if(isset($response['user']))
+        {
+            // return  $response['user'];
+        }else{
+            return $response;
+        }
 
         $mlm_wallet = isset($response['user']['wallet']) ? (int)$response['user']['wallet'] : 0;
         $mlm_balance = isset($response['user']['balance']) ? (int)$response['user']['balance'] : 0;
 
         $mlm_total = $mlm_wallet + $mlm_balance;
 
-        $request->total =200;
-        if ($mlm_wallet > $request->total) {
-            $mlm_wallet = $mlm_wallet - $request->total;
-        } elseif ($mlm_wallet < $request->total && $mlm_total > $request->total) {
-            $need_from_balance = $request->total - $mlm_wallet;
-            $mlm_balance -= $need_from_balance;
-            $mlm_wallet = 0;
-        }else{
-            return 'redirect()->back()';
-        }
+        // $request->total =200;
+        // if ($mlm_wallet > $request->total) {
+        //     $mlm_wallet = $mlm_wallet - $request->total;
+        // } elseif ($mlm_wallet < $request->total && $mlm_total > $request->total) {
+        //     $need_from_balance = $request->total - $mlm_wallet;
+        //     $mlm_balance -= $need_from_balance;
+        //     $mlm_wallet = 0;
+        // }else{
+        //     return 'redirect()->back()';
+        // }
         
 
         // dd($request->total);
@@ -80,7 +88,9 @@ class ManualPaymentController extends CheckoutBaseControlller
         }
 
         $oldCart = Session::get('cart');
+        // dd($oldCart);
         $cart = new Cart($oldCart);
+        
         OrderHelper::license_check($cart); // For License Checking
         $t_oldCart = Session::get('cart');
         $t_cart = new Cart($t_oldCart);
@@ -130,7 +140,7 @@ class ManualPaymentController extends CheckoutBaseControlller
 
         }
 
-        
+        return $input;
         $data = $order->fill($input)->save();
         $order->tracks()->create(['title' => 'Pending', 'text' => 'You have successfully placed your order.' ]);
         $order->notifications()->create();
@@ -178,6 +188,36 @@ class ManualPaymentController extends CheckoutBaseControlller
             "mlm_wallet"=> $mlm_wallet,
             "mlm_balance"=> $mlm_balance
         ];
+
+
+        // adding price to seller account
+        $sellerIds = $request->input('seller_id', []); 
+        $productPrices = $request->input('product_price', []); 
+    
+        // Validate that the number of seller IDs and product prices match
+        if (count($sellerIds) !== count($productPrices)) {
+            return response()->json(['error' => 'Invalid data provided'], 400);
+        }
+        // Combine seller IDs and product prices into an associative array
+        $sellerProductPrices = array_combine($sellerIds, $productPrices);
+        // Retrieve sellers based on seller IDs
+        $sellers = User::whereIn('id', $sellerIds)->get();
+        // Associate sellers with product prices
+        foreach ($sellers as $seller) {
+            $sellerId = $seller->id;
+            
+            // Check if the seller is associated with a product price
+            if (isset($sellerProductPrices[$sellerId])) {
+                $productPrice = $sellerProductPrices[$sellerId];
+    
+                // Update the product price for the seller in the User table
+                $seller->kmoney = $productPrice;
+                $seller->save();
+            }
+        }
+
+
+        
 
         $response = Http::post('http://127.0.0.1:8001/api/update-user-amount', $data);
 
