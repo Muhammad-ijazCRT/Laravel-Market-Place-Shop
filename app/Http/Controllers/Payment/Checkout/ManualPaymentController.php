@@ -58,15 +58,15 @@ class ManualPaymentController extends CheckoutBaseControlller
         $mlm_total = $mlm_wallet + $mlm_balance;
 
         // $request->total =200;
-        // if ($mlm_wallet > $request->total) {
-        //     $mlm_wallet = $mlm_wallet - $request->total;
-        // } elseif ($mlm_wallet < $request->total && $mlm_total > $request->total) {
-        //     $need_from_balance = $request->total - $mlm_wallet;
-        //     $mlm_balance -= $need_from_balance;
-        //     $mlm_wallet = 0;
-        // }else{
-        //     return 'redirect()->back()';
-        // }
+        if ($mlm_wallet > $request->total) {
+            $mlm_wallet = $mlm_wallet - $request->total;
+        } elseif ($mlm_wallet < $request->total && $mlm_total > $request->total) {
+            $need_from_balance = $request->total - $mlm_wallet;
+            $mlm_balance -= $need_from_balance;
+            $mlm_wallet = 0;
+        }else{
+            return redirect()->back();
+        }
         
 
         // dd($request->total);
@@ -224,6 +224,7 @@ class ManualPaymentController extends CheckoutBaseControlller
 
         // $response = Http::post('http://127.0.0.1:8001/api/update-user-amount', $data);
         $response = Http::post('https://staging.kosmomoney.com/api/update-user-amount', $data);
+        return $response;
 
         //Sending Email To Buyer
         // $data = [

@@ -56,7 +56,7 @@
                                 @if (Auth::user()->IsVendor())
                                 <li><a href="{{ route('vendor.dashboard') }}"><span class="menu-item-text">{{ __('Vendor Panel') }}</span></a></li>
                                 @endif
-                                <li><a href="#"><span class="menu-item-text">Kmoney {{ auth()->user()->kmoney }}Ky</span></a></li>
+                                <li><a href="#"><span class="menu-item-text">Kmoney {{ auth()->user()->kmoney ? auth()->user()->kmoney : 0 }}Ky</span></a></li>
                                 <li><a href="{{ route('user-profile') }}"><span class="menu-item-text">{{ __('Edit Profile') }}</span></a></li>
                                 <li><a href="{{ route('user-logout') }}"><span class="menu-item-text">{{ __('Logout') }}</span></a></li>
 
