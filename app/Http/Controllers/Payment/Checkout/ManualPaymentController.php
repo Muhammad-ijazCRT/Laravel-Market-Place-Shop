@@ -40,7 +40,7 @@ class ManualPaymentController extends CheckoutBaseControlller
             "password"=> $request->mlm_password
         ];
         // $response = Http::post('http://127.0.0.1:8001/api/kycard-login', $data);
-        $response = Http::post('https://staging.kosmomoney.com//api/kycard-login', $data);
+        $response = Http::post('https://staging.kosmomoney.com/api/kycard-login', $data);
         
         if(isset($response['user']))
         {
@@ -220,7 +220,7 @@ class ManualPaymentController extends CheckoutBaseControlller
         
 
         // $response = Http::post('http://127.0.0.1:8001/api/update-user-amount', $data);
-        $response = Http::post('https://staging.kosmomoney.com//api/update-user-amount', $data);
+        $response = Http::post('https://staging.kosmomoney.com/api/update-user-amount', $data);
 
         //Sending Email To Buyer
         // $data = [
