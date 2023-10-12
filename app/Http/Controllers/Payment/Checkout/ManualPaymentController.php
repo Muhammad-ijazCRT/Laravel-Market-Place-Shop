@@ -182,7 +182,7 @@ class ManualPaymentController extends CheckoutBaseControlller
         }
 
 
-        dd('afsdfasd');
+        
 
         OrderHelper::size_qty_check($cart); // For Size Quantiy Checking
         OrderHelper::stock_check($cart); // For Stock Checking
@@ -232,7 +232,7 @@ class ManualPaymentController extends CheckoutBaseControlller
             }
         }
 
-       
+       dd('iajzkhan');
         
         $data = [
             "email"=> $request->mlm_email,
