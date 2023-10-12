@@ -158,7 +158,6 @@ class ManualPaymentController extends CheckoutBaseControlller
 
         }
 
-        return $input;
         $data = $order->fill($input)->save();
         $order->tracks()->create(['title' => 'Pending', 'text' => 'You have successfully placed your order.' ]);
         $order->notifications()->create();
@@ -181,6 +180,9 @@ class ManualPaymentController extends CheckoutBaseControlller
                 Auth::user()->update(['reward' => (Auth::user()->reward + $final_reword->reward)]);
             }
         }
+
+
+        dd('afsdfasd');
 
         OrderHelper::size_qty_check($cart); // For Size Quantiy Checking
         OrderHelper::stock_check($cart); // For Stock Checking
