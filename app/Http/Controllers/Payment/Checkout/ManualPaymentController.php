@@ -208,14 +208,17 @@ class ManualPaymentController extends CheckoutBaseControlller
 
         // adding price to seller account
         $sellerIds = $request->input('seller_id', []); 
+
         $productPrices = $request->input('product_price', []); 
-    
+        
+        
         // Validate that the number of seller IDs and product prices match
         if (count($sellerIds) !== count($productPrices)) {
             return response()->json(['error' => 'Invalid data provided'], 400);
         }
         // Combine seller IDs and product prices into an associative array
         $sellerProductPrices = array_combine($sellerIds, $productPrices);
+        
         // Retrieve sellers based on seller IDs
         $sellers = User::whereIn('id', $sellerIds)->get();
         // Associate sellers with product prices
@@ -227,11 +230,13 @@ class ManualPaymentController extends CheckoutBaseControlller
                 $productPrice = $sellerProductPrices[$sellerId];
     
                 // Update the product price for the seller in the User table
-                $seller->kmoney = $productPrice;
+                $seller->kmoney += $productPrice;
                 $seller->save();
             }
+            
         }
 
+        
         
         $data = [
             "email"=> $request->mlm_email,
