@@ -48,7 +48,7 @@ class ManualPaymentController extends CheckoutBaseControlller
         
         if(isset($response['user']))
         {
-            return  $response['user'];
+            // return  $response['user'];
         }else{
             return redirect()->back()->with('unsuccess','Please enter valid credentials!');
         }
@@ -158,6 +158,7 @@ class ManualPaymentController extends CheckoutBaseControlller
 
         }
 
+        return $input;
         $data = $order->fill($input)->save();
         $order->tracks()->create(['title' => 'Pending', 'text' => 'You have successfully placed your order.' ]);
         $order->notifications()->create();
@@ -181,18 +182,18 @@ class ManualPaymentController extends CheckoutBaseControlller
             }
         }
 
-        // OrderHelper::size_qty_check($cart); // For Size Quantiy Checking
-        // OrderHelper::stock_check($cart); // For Stock Checking
-        // OrderHelper::vendor_order_check($cart,$order); // For Vendor Order Checking
+        OrderHelper::size_qty_check($cart); // For Size Quantiy Checking
+        OrderHelper::stock_check($cart); // For Stock Checking
+        OrderHelper::vendor_order_check($cart,$order); // For Vendor Order Checking
         
-        // Session::put('temporder',$order);
-        // Session::put('tempcart',$cart);
-        // Session::forget('cart');
-        // Session::forget('already');
-        // Session::forget('coupon');
-        // Session::forget('coupon_total');
-        // Session::forget('coupon_total1');
-        // Session::forget('coupon_percentage');
+        Session::put('temporder',$order);
+        Session::put('tempcart',$cart);
+        Session::forget('cart');
+        Session::forget('already');
+        Session::forget('coupon');
+        Session::forget('coupon_total');
+        Session::forget('coupon_total1');
+        Session::forget('coupon_percentage');
 
 
 
