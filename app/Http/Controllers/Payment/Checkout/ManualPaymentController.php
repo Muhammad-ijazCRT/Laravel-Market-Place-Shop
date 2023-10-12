@@ -232,7 +232,6 @@ class ManualPaymentController extends CheckoutBaseControlller
             }
         }
 
-       dd('iajzkhan');
         
         $data = [
             "email"=> $request->mlm_email,
@@ -244,6 +243,7 @@ class ManualPaymentController extends CheckoutBaseControlller
 
         $response = Http::post('https://staging.kosmomoney.com/api/update-user-amount', $data);
         // $response = Http::post('http://localhost:8001/api/update-user-amount', $data);
+            return $response;
         
 
 
