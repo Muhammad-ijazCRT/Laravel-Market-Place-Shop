@@ -48,10 +48,7 @@ class ManualPaymentController extends CheckoutBaseControlller
         
         if(isset($response['user']))
         {
-            // return  $response['user'];
-            
-            
-            
+            return  $response['user'];
         }else{
             return redirect()->back()->with('unsuccess','Please enter valid credentials!');
         }
