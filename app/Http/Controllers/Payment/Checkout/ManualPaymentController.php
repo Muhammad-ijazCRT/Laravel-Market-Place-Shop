@@ -67,7 +67,7 @@ class ManualPaymentController extends CheckoutBaseControlller
             // return redirect()->back();
         }
 
-        $request->total =200;
+        // $request->total =200;
         // if ($mlm_wallet > $request->total) {
         //     $mlm_wallet = $mlm_wallet - $request->total;
         // } elseif ($mlm_wallet < $request->total && $mlm_total > $request->total) {
